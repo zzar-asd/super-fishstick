@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" 
+     width="400" 
+     height="300" 
+     viewBox="0 0 400 300">
+  
+  <!-- Define gradients for 3D effect -->
+  <defs>
+    <linearGradient id="cylinderGradient" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#a8d5ff;stop-opacity:1" />
+      <stop offset="50%" style="stop-color:#e0f0ff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#a8d5ff;stop-opacity:1" />
+    </linearGradient>
+    <linearGradient id="topGradient" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" style="stop-color:#ffffff;stop-opacity:1" />
+      <stop offset="100%" style="stop-color:#b0d8ff;stop-opacity:1" />
+    </linearGradient>
+  </defs>
+  
+  <!-- Back side of top ellipse (hidden part) -->
+  <ellipse cx="200.0" cy="75.0" rx="80" ry="24.0" 
+           fill="none" stroke="#6ba3c7" stroke-width="2" />
+  
+  <!-- Cylinder body (rectangle with gradient) -->
+  <rect x="120.0" y="75.0" 
+        width="160" height="150" 
+        fill="url(#cylinderGradient)" stroke="#6ba3c7" stroke-width="2" />
+  
+  <!-- Bottom ellipse -->
+  <ellipse cx="200.0" cy="225.0" rx="80" ry="24.0" 
+           fill="url(#cylinderGradient)" stroke="#6ba3c7" stroke-width="2" />
+  
+  <!-- Top ellipse (visible part) -->
+  <ellipse cx="200.0" cy="75.0" rx="80" ry="24.0" 
+           fill="url(#topGradient)" stroke="#6ba3c7" stroke-width="2" />
+  
+  <!-- Side lines for depth -->
+  <line x1="120.0" y1="75.0" 
+        x2="120.0" y2="225.0" 
+        stroke="#6ba3c7" stroke-width="2" opacity="0.5" />
+  <line x1="280.0" y1="75.0" 
+        x2="280.0" y2="225.0" 
+        stroke="#6ba3c7" stroke-width="2" opacity="0.5" />
+  
+</svg>

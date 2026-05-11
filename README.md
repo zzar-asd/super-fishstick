@@ -1,6 +1,6 @@
 # super-fishstick
 
-本项目包含两个 Python 脚本，用于生成图形图像：
+本项目包含多个 Python 脚本，用于生成图形图像和处理视频。
 
 ## 功能说明
 
@@ -36,15 +36,73 @@ python3 generate_cylinder_svg.py
 **依赖：**
 - 无需额外依赖，使用 Python 标准库即可
 
+### 3. 视频过滤和水印去除 (`video_filter_watermark.py`)
+
+使用 `opencv-python` 和 `moviepy` 库进行视频滤镜应用和水印去除。
+
+**运行方式：**
+
+应用视频滤镜：
+```bash
+# 模糊滤镜
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode filter --filter-type blur
+
+# 锐化滤镜
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode filter --filter-type sharpen
+
+# 灰度滤镜
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode filter --filter-type grayscale
+
+# 棕褐色滤镜
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode filter --filter-type sepia
+
+# 边缘检测
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode filter --filter-type edge
+```
+
+去除水印：
+```bash
+# 使用 OpenCV 方法（默认，自动检测右下角水印）
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode watermark
+
+# 使用 MoviePy 方法
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode watermark --method moviepy
+
+# 指定水印区域 (x, y, width, height)
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode watermark --watermark-area 100 100 50 50
+```
+
+**参数说明：**
+- `-i, --input`: 输入视频文件路径（必需）
+- `-o, --output`: 输出视频文件路径（必需）
+- `-m, --mode`: 操作模式，`filter`（滤镜）或 `watermark`（去水印）
+- `-f, --filter-type`: 滤镜类型（blur, sharpen, grayscale, sepia, edge, none）
+- `--method`: 去水印方法（opencv 或 moviepy）
+- `--watermark-area`: 水印区域坐标 (x, y, width, height)
+
+**支持的滤镜类型：**
+- `blur`: 高斯模糊
+- `sharpen`: 锐化
+- `grayscale`: 灰度化
+- `sepia`: 棕褐色复古效果
+- `edge`: 边缘检测
+- `none`: 无滤镜
+
+**依赖：**
+```bash
+pip install opencv-python moviepy numpy
+```
+
 ## 文件结构
 
 ```
 /workspace
-├── README.md                 # 项目说明文档
-├── generate_sine_wave.py     # 正弦波生成脚本
-├── generate_cylinder_svg.py  # SVG 圆柱体生成脚本
-├── sine_wave.png             # 生成的正弦波图像
-└── cylinder.svg              # 生成的圆柱体 SVG 图像
+├── README.md                    # 项目说明文档
+├── generate_sine_wave.py        # 正弦波生成脚本
+├── generate_cylinder_svg.py     # SVG 圆柱体生成脚本
+├── video_filter_watermark.py    # 视频过滤和水印去除脚本
+├── sine_wave.png                # 生成的正弦波图像
+└── cylinder.svg                 # 生成的圆柱体 SVG 图像
 ```
 
 ## 使用方法
