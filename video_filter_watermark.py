@@ -200,12 +200,73 @@ def remove_watermark_opencv(input_path, output_path, watermark_area=None):
     print(f"水印去除完成！共处理 {frame_count} 帧，输出到: {output_path}")
 
 
+def resize_video(input_path, output_path, scale_factor=None, new_size=None):
+    """
+    改变视频比例/分辨率
+    
+    参数:
+        input_path: 输入视频路径
+        output_path: 输出视频路径
+        scale_factor: 缩放因子 (例如 0.5 缩小一半，2.0 放大两倍)
+        new_size: 目标尺寸 (width, height)，如果指定则忽略 scale_factor
+    """
+    cap = cv2.VideoCapture(input_path)
+    
+    if not cap.isOpened():
+        raise ValueError(f"无法打开视频文件：{input_path}")
+    
+    # 获取视频属性
+    fps = int(cap.get(cv2.CAP_PROP_FPS))
+    width = int(cap.get(cv2.CAP_PROP_FRAME_WIDTH))
+    height = int(cap.get(cv2.CAP_PROP_FRAME_HEIGHT))
+    
+    # 计算目标尺寸
+    if new_size is not None:
+        new_width, new_height = new_size
+    elif scale_factor is not None:
+        new_width = int(width * scale_factor)
+        new_height = int(height * scale_factor)
+    else:
+        # 默认缩小到一半
+        new_width = width // 2
+        new_height = height // 2
+    
+    fourcc = cv2.VideoWriter_fourcc(*'mp4v')
+    out = cv2.VideoWriter(output_path, fourcc, fps, (new_width, new_height))
+    
+    frame_count = 0
+    
+    print(f"正在调整视频尺寸：{width}x{height} -> {new_width}x{new_height}...")
+    
+    while True:
+        ret, frame = cap.read()
+        if not ret:
+            break
+        
+        # 使用 INTER_AREA 插值法进行缩放（适合缩小）
+        # 如果是放大，使用 INTER_CUBIC 效果更好
+        if new_width > width and new_height > height:
+            resized = cv2.resize(frame, (new_width, new_height), interpolation=cv2.INTER_CUBIC)
+        else:
+            resized = cv2.resize(frame, (new_width, new_height), interpolation=cv2.INTER_AREA)
+        
+        out.write(resized)
+        frame_count += 1
+        
+        if frame_count % 100 == 0:
+            print(f"已处理 {frame_count} 帧")
+    
+    cap.release()
+    out.release()
+    print(f"视频尺寸调整完成！共处理 {frame_count} 帧，输出到：{output_path}")
+
+
 def main():
     parser = argparse.ArgumentParser(description='视频过滤和水印去除工具')
     parser.add_argument('--input', '-i', required=True, help='输入视频文件路径')
     parser.add_argument('--output', '-o', required=True, help='输出视频文件路径')
-    parser.add_argument('--mode', '-m', choices=['filter', 'watermark'], default='filter',
-                       help='操作模式：filter(滤镜) 或 watermark(去水印)')
+    parser.add_argument('--mode', '-m', choices=['filter', 'watermark', 'resize'], default='filter',
+                       help='操作模式：filter(滤镜), watermark(去水印), resize(调整尺寸)')
     parser.add_argument('--filter-type', '-f', 
                        choices=['blur', 'sharpen', 'grayscale', 'sepia', 'edge', 'none'],
                        default='none', help='滤镜类型（仅在 filter 模式下使用）')
@@ -213,6 +274,9 @@ def main():
                        help='去水印方法（仅在 watermark 模式下使用）')
     parser.add_argument('--watermark-area', type=int, nargs=4, metavar=('X', 'Y', 'W', 'H'),
                        help='水印区域坐标 (x, y, width, height)')
+    parser.add_argument('--scale', '-s', type=float, help='缩放因子（仅在 resize 模式下使用，例如 0.5 缩小一半，2.0 放大两倍）')
+    parser.add_argument('--size', type=int, nargs=2, metavar=('WIDTH', 'HEIGHT'),
+                       help='目标尺寸 (width height)（仅在 resize 模式下使用，优先级高于 scale）')
     
     args = parser.parse_args()
     
@@ -224,6 +288,14 @@ def main():
                 remove_watermark_opencv(args.input, args.output, args.watermark_area)
             else:
                 remove_watermark_moviepy(args.input, args.output, args.watermark_area)
+        elif args.mode == 'resize':
+            if args.scale is None and args.size is None:
+                print("警告：未指定缩放因子或目标尺寸，将默认缩小到 50%")
+                resize_video(args.input, args.output, scale_factor=0.5)
+            elif args.size is not None:
+                resize_video(args.input, args.output, new_size=tuple(args.size))
+            else:
+                resize_video(args.input, args.output, scale_factor=args.scale)
     except Exception as e:
         print(f"错误: {e}")
         return 1

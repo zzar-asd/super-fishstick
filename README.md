@@ -36,9 +36,9 @@ python3 generate_cylinder_svg.py
 **依赖：**
 - 无需额外依赖，使用 Python 标准库即可
 
-### 3. 视频过滤和水印去除 (`video_filter_watermark.py`)
+### 3. 视频过滤、水印去除和尺寸调整 (`video_filter_watermark.py`)
 
-使用 `opencv-python` 和 `moviepy` 库进行视频滤镜应用和水印去除。
+使用 `opencv-python` 和 `moviepy` 库进行视频滤镜应用、水印去除和尺寸调整。
 
 **运行方式：**
 
@@ -72,13 +72,27 @@ python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode watermark --
 python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode watermark --watermark-area 100 100 50 50
 ```
 
+调整视频尺寸/比例：
+```bash
+# 使用缩放因子（缩小到 50%）
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode resize --scale 0.5
+
+# 放大到 2 倍
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode resize --scale 2.0
+
+# 指定目标尺寸（宽 640 高 480）
+python3 video_filter_watermark.py -i input.mp4 -o output.mp4 --mode resize --size 640 480
+```
+
 **参数说明：**
 - `-i, --input`: 输入视频文件路径（必需）
 - `-o, --output`: 输出视频文件路径（必需）
-- `-m, --mode`: 操作模式，`filter`（滤镜）或 `watermark`（去水印）
+- `-m, --mode`: 操作模式，`filter`（滤镜）、`watermark`（去水印）或 `resize`（调整尺寸）
 - `-f, --filter-type`: 滤镜类型（blur, sharpen, grayscale, sepia, edge, none）
 - `--method`: 去水印方法（opencv 或 moviepy）
 - `--watermark-area`: 水印区域坐标 (x, y, width, height)
+- `-s, --scale`: 缩放因子（仅在 resize 模式下使用，例如 0.5 缩小一半，2.0 放大两倍）
+- `--size`: 目标尺寸 (width height)（仅在 resize 模式下使用，优先级高于 scale）
 
 **支持的滤镜类型：**
 - `blur`: 高斯模糊
